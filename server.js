@@ -1,46 +1,61 @@
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser')
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
 
-const cors = require('cors')
+const cors = require('cors');
 
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 mongoose.connect(process.env.MLAB_URI);
+// create schema
+app.use(cors());
 
-app.use(cors())
-
-app.use(bodyParser.urlencoded({extended: false}))
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 
-app.use(express.static('public'))
+app.use(express.static('public'));
+
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/views/index.html')
+  res.sendFile(__dirname + '/views/index.html');
+});
+
+// exercise log route
+app.get('api/exercise/', (req,res)=>{
+  res.send("showing log");
+});
+// create a new user route
+app.post('/api/exercise/new-user', (req, res) => {
+  res.send("user added");
+});
+
+// add exercises route
+app.post('/api/exercise/add', (req, res) => {
+  res.send("exercise added");
 });
 
 
 // Not found middleware
 app.use((req, res, next) => {
-  return next({status: 404, message: 'not found'})
+  return next({status: 404, message: 'not found'});
 })
 
 // Error Handling middleware
 app.use((err, req, res, next) => {
-  let errCode, errMessage
+  let errCode, errMessage;
 
   if (err.errors) {
     // mongoose validation error
-    errCode = 400 // bad request
-    const keys = Object.keys(err.errors)
+    errCode = 400; // bad request
+    const keys = Object.keys(err.errors);
     // report the first validation error
-    errMessage = err.errors[keys[0]].message
+    errMessage = err.errors[keys[0]].message;
   } else {
     // generic or custom error
-    errCode = err.status || 500
-    errMessage = err.message || 'Internal Server Error'
+    errCode = err.status || 500;
+    errMessage = err.message || 'Internal Server Error';
   }
   res.status(errCode).type('txt')
-    .send(errMessage)
+    .send(errMessage);
 })
 
 const listener = app.listen(process.env.PORT || 3000, () => {
