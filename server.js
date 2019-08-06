@@ -6,7 +6,17 @@ const cors = require('cors');
 
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MLAB_URI);
+
 // create schema
+const schema = new mongoose.Schema({
+  username: String,
+  description: String,
+  duration: Number,
+  date: Date
+});
+
+var User = mongoose.model('User',schema);
+
 app.use(cors());
 
 app.use(bodyParser.urlencoded({extended: false}));
