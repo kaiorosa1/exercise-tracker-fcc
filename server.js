@@ -35,7 +35,36 @@ app.get('api/exercise/', (req,res)=>{
 });
 // create a new user route
 app.post('/api/exercise/new-user', (req, res) => {
-  res.send("user added");
+  let name = req.body.username;
+  if(name !== ''){
+    var userTracker;
+    // if name already exists show name and id
+    // if it's a new name save in the db and show name and id
+    User.find({username: name},(err,data)=>{
+      if(err){
+        return err;
+      }
+      if(data[0] == undefined){
+        // creating a new user
+        userTracker = new User({username: name})
+        // saving in the database
+        userTracker.save((er,dt)=>{
+          if(er){
+            return er;
+          }
+        });
+                                   
+        res.json({username: name, id: userTracker.id});                      
+      }else{
+        res.send('User already exists');
+      }
+      
+    });
+    
+  }else{
+    res.json({error: 'invalid username'});
+  }
+  
 });
 
 // add exercises route
