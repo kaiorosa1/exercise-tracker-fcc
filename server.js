@@ -12,7 +12,7 @@ const schema = new mongoose.Schema({
   username: String,
   description: String,
   duration: Number,
-  date: Date
+  exerciseDate: Date
 });
 
 var User = mongoose.model('User',schema);
@@ -69,11 +69,30 @@ app.post('/api/exercise/new-user', (req, res) => {
 
 // add exercises route
 app.post('/api/exercise/add', (req, res) => {
-  User.findOneAndUpdate({id: req.body.userId},(err,data)=>{
+  console.log(req.body.userId);
+  // validate the  fields before updating
+  // make sure id,desc, duration has a value
+  
+  let exDesc = req.body.description;
+  let exDuration = req.body.duration;
+  let exDate = req.body.exerciseDate;
+  // if date is empty put NoW
+  if(exDate == null){
+    exDate = Date(Date.now());
+  }
+  
+  // update the user
+  User.findByIdAndUpdate(req.body.userId,{  $set: {description: exDesc,duration: exDuration, exerciseDate: exDate}},(err,data)=>{
     if(err){
       return err;
     }
-    console.log(data);
+  });
+  // find the current version
+  User.findById(req.body.userId,(err,data)=>{
+    if(err){
+      return err;
+    }
+    res.json({username: data.username,_id: data.id,description: data.description, duration: data.duration, date: data.exerciseDate.toString()});
   });
 });
 
