@@ -54,9 +54,9 @@ app.post('/api/exercise/new-user', (req, res) => {
           }
         });
                                    
-        res.json({username: name, id: userTracker.id});                      
+        res.json({username: name, _id: userTracker.id});                      
       }else{
-        res.send('User already exists');
+        res.send('username already taken');
       }
       
     });
@@ -69,7 +69,12 @@ app.post('/api/exercise/new-user', (req, res) => {
 
 // add exercises route
 app.post('/api/exercise/add', (req, res) => {
-  res.send("exercise added");
+  User.findOneAndUpdate({id: req.body.userId},(err,data)=>{
+    if(err){
+      return err;
+    }
+    console.log(data);
+  });
 });
 
 
