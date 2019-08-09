@@ -29,9 +29,15 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-// exercise log route
-app.get('api/exercise/', (req,res)=>{
-  res.send("showing log");
+// show a specific user log
+app.get('/api/exercise/log?:id',(req,res)=>{
+  // show specific information about this user
+  res.send('cool');
+});
+
+// show all users id and name
+app.get('/api/exercise/users', (req,res)=>{
+  res.send("showing users registered");
 });
 // create a new user route
 app.post('/api/exercise/new-user', (req, res) => {
@@ -69,13 +75,14 @@ app.post('/api/exercise/new-user', (req, res) => {
 
 // add exercises route
 app.post('/api/exercise/add', (req, res) => {
-  console.log(req.body.userId);
   // validate the  fields before updating
-  // make sure id,desc, duration has a value
-  
   let exDesc = req.body.description;
   let exDuration = req.body.duration;
-  let exDate = req.body.exerciseDate;
+  let exDate = req.body.date;
+  // make sure id,desc, duration has a value
+  if(exDesc == '' || exDuration== '' || req.body.userId == ''){
+    res.send('Fields with * cannot be null!');
+  }
   // if date is empty put NoW
   if(exDate == null){
     exDate = Date(Date.now());
