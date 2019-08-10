@@ -37,7 +37,19 @@ app.get('/api/exercise/log?:id',(req,res)=>{
 
 // show all users id and name
 app.get('/api/exercise/users', (req,res)=>{
-  res.send("showing users registered");
+  let jsonArray = [];
+  User.find({},(err,data)=>{
+    if(err){
+      return err;
+    }
+    for(let i =0; i < data.length; i++){
+      let jsonObj = {"username": data[i].username, "_id": data[i].id};
+      jsonArray.push(jsonObj);
+    }
+    res.send(jsonArray);
+  });
+ 
+  
 });
 // create a new user route
 app.post('/api/exercise/new-user', (req, res) => {
