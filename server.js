@@ -9,6 +9,7 @@ mongoose.connect(process.env.MLAB_URI);
 
 // create schema
 const schema = new mongoose.Schema({
+  idUser: String,
   username: String,
   description: String,
   duration: Number,
@@ -33,12 +34,13 @@ app.get('/', (req, res) => {
 app.get('/api/exercise/log',(req,res)=>{
   // show specific information about this user
   if(req.query.userId != null){
-    User.find({_id:req.query.userId},(err,data)=>{
+    User.find({idUser:req.query.userId},(err,data)=>{
       if(err){
         return err;
       }
       if(data[0]!== undefined){
         // show all data from specific user
+        // should count the exercise count which is the size of the array
          res.json(data);
         
       }else{
@@ -58,10 +60,12 @@ app.get('/api/exercise/users', (req,res)=>{
     if(err){
       return err;
     }
+    // how to not show duplicates?
     for(let i =0; i < data.length; i++){
-      let jsonObj = {"username": data[i].username, "_id": data[i].id};
+      let jsonObj = {username: data[i].username, _id: data[i].idUser};    
       jsonArray.push(jsonObj);
     }
+    
     res.send(jsonArray);
   });
  
@@ -70,6 +74,7 @@ app.get('/api/exercise/users', (req,res)=>{
 // create a new user route
 app.post('/api/exercise/new-user', (req, res) => {
   let name = req.body.username;
+  let userNameId= Math.random().toString(36).substr(2, 9);
   if(name !== ''){
     var userTracker;
     // if name already exists show name and id
@@ -80,7 +85,7 @@ app.post('/api/exercise/new-user', (req, res) => {
       }
       if(data[0] == undefined){
         // creating a new user
-        userTracker = new User({username: name})
+        userTracker = new User({username: name, idUser: userNameId});
         // saving in the database
         userTracker.save((er,dt)=>{
           if(er){
@@ -88,7 +93,7 @@ app.post('/api/exercise/new-user', (req, res) => {
           }
         });
                                    
-        res.json({username: name, _id: userTracker.id});                      
+        res.json({username: name, _id: userTracker.idUser});                      
       }else{
         res.send('username already taken');
       }
@@ -111,24 +116,29 @@ app.post('/api/exercise/add', (req, res) => {
   if(exDesc == '' || exDuration== '' || req.body.userId == ''){
     res.send('Fields with * cannot be null!');
   }
-  // if date is empty put NoW
-  if(exDate == null){
+  // if date is empty put Now
+  if(exDate == ''){
     exDate = Date(Date.now());
   }
   
   // update the user
-  User.findOneAndUpdate(req.body.userId,{  $set: {description: exDesc,duration: exDuration, exerciseDate: exDate}},(err,data)=>{
+  User.findOne({idUser: req.body.userId},(err,data)=>{
     if(err){
       return err;
     }
-  });
-  // find the current version
-  User.findById(req.body.userId,(err,data)=>{
+    if(data == undefined){
+      res.send('user does not exist');
+    }
+    // create user log
+    User.create({username:data.username, idUser: data.idUser, description: exDesc,duration: exDuration, exerciseDate: exDate},(err,data)=>{
     if(err){
       return err;
     }
-    res.json({username: data.username,_id: data.id,description: data.description, duration: data.duration, date: data.exerciseDate.toString()});
+    res.json({username: data.username,_id: data.idUser,description: data.description, duration: data.duration, date: data.exerciseDate.toString()});
   });
+  });
+  
+  
 });
 
 
