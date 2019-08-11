@@ -30,9 +30,25 @@ app.get('/', (req, res) => {
 });
 
 // show a specific user log
-app.get('/api/exercise/log?:id',(req,res)=>{
+app.get('/api/exercise/log',(req,res)=>{
   // show specific information about this user
-  res.send('cool');
+  if(req.query.userId != null){
+    User.find({_id:req.query.userId},(err,data)=>{
+      if(err){
+        return err;
+      }
+      if(data[0]!== undefined){
+        // show all data from specific user
+         res.json(data);
+        
+      }else{
+        res.send("user not found");
+      }
+    });
+  }else{
+    res.send("invalid user!");
+  }
+  
 });
 
 // show all users id and name
@@ -101,7 +117,7 @@ app.post('/api/exercise/add', (req, res) => {
   }
   
   // update the user
-  User.findByIdAndUpdate(req.body.userId,{  $set: {description: exDesc,duration: exDuration, exerciseDate: exDate}},(err,data)=>{
+  User.findOneAndUpdate(req.body.userId,{  $set: {description: exDesc,duration: exDuration, exerciseDate: exDate}},(err,data)=>{
     if(err){
       return err;
     }
