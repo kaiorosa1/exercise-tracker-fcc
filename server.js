@@ -62,11 +62,20 @@ app.get('/api/exercise/users', (req,res)=>{
     }
     // how to not show duplicates?
     for(let i =0; i < data.length; i++){
-      let jsonObj = {username: data[i].username, _id: data[i].idUser};    
+      let jsonObj = {username: data[i].username, _id: data[i].idUser}; 
       jsonArray.push(jsonObj);
     }
+    let dups = [];
+    let arrNoDuplicates = jsonArray.filter((el) =>{
+        // If it is not a duplicate, return true
+        if (dups.indexOf(el.username) == -1) {
+          dups.push(el.username);
+          return true;
+        }
+        return false;
+    });
     
-    res.send(jsonArray);
+    res.send(arrNoDuplicates);
   });
  
   
