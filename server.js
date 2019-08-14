@@ -41,7 +41,10 @@ app.get('/api/exercise/log',(req,res)=>{
       if(data[0]!== undefined){
         // show all data from specific user
         // should count the exercise count which is the size of the array
-         res.json(data);
+        let count = data.length;
+        console.log(count);
+        res.json(data);
+        
         
       }else{
         res.send("user not found");
