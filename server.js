@@ -42,8 +42,13 @@ app.get('/api/exercise/log',(req,res)=>{
         // show all data from specific user
         // should count the exercise count which is the size of the array
         let count = data.length;
-        console.log(count);
-        res.json(data);
+        let username =data[0].username;
+        let idUsername = data[0].idUser;
+        let log = [];
+        for(let i =1;i < count; i++){        
+          log.push({description: data[i].description, duration: data[i].duration, date: data[i].exerciseDate.toString()});
+        }
+        res.json({_id:idUsername, username: username, count: count, log : log});
         
         
       }else{
