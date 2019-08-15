@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 // show a specific user log
 app.get('/api/exercise/log',(req,res)=>{
   // show specific information about this user
-  if(req.query.userId != null){
+  if(req.query.userId !== null){
     User.find({idUser:req.query.userId},(err,data)=>{
       if(err){
         return err;
@@ -45,6 +45,10 @@ app.get('/api/exercise/log',(req,res)=>{
         let username =data[0].username;
         let idUsername = data[0].idUser;
         let log = [];
+        if(req.query.limit !== undefined){
+          count = req.query.limit;
+        }
+        //console.log(req.query.limit);
         for(let i =1;i < count; i++){        
           log.push({description: data[i].description, duration: data[i].duration, date: data[i].exerciseDate.toString()});
         }
@@ -55,7 +59,8 @@ app.get('/api/exercise/log',(req,res)=>{
         res.send("user not found");
       }
     });
-  }else{
+  }
+  else{
     res.send("invalid user!");
   }
   
