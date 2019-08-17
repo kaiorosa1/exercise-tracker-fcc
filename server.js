@@ -67,12 +67,18 @@ app.get('/api/exercise/log',(req,res)=>{
           }
           
         }
-        for(let i =0;i < count; i++){    
+        for(let i =1;i < count; i++){    
           if(dateTo !== null){
             // verify up to this date
+            if(!(data[i].exerciseDate.getTime() <= dateTo.getTime())){
+                continue;
+            }
           }
           if(dateFrom !== null){
             // verify if date is greate than
+            if(!(data[i].exerciseDate.getTime() >= dateFrom.getTime())){
+              continue;
+            }
           }
           log.push({description: data[i].description, duration: data[i].duration, date: data[i].exerciseDate});
         }
