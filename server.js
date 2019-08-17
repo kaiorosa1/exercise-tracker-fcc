@@ -44,6 +44,8 @@ app.get('/api/exercise/log',(req,res)=>{
         let count = data.length;
         let username =data[0].username;
         let idUsername = data[0].idUser;
+        let dateFrom = null;
+        let dateTo = null;
         let log = [];
         // solve bug with the count objects
         if(req.query.limit !== undefined){
@@ -51,14 +53,28 @@ app.get('/api/exercise/log',(req,res)=>{
         }
         if(req.query.from !== undefined){
           // it has to be a valid date
-          // shows date gte to the query
+          dateFrom = new Date(req.query.from);
+          if(!(dateFrom instanceof Date)){
+            res.send("invalid date");
+          }
+
         }
         if(req.query.to !== undefined){
           // it has to be a valid date
-          // shows date lte to the query
+          dateTo = new Date(req.query.to);
+          if(!(dateTo instanceof Date)){
+            res.send("invalid date");
+          }
+          
         }
-        for(let i =1;i < count; i++){        
-          log.push({description: data[i].description, duration: data[i].duration, date: data[i].exerciseDate.toString()});
+        for(let i =0;i < count; i++){    
+          if(dateTo !== null){
+            // verify up to this date
+          }
+          if(dateFrom !== null){
+            // verify if date is greate than
+          }
+          log.push({description: data[i].description, duration: data[i].duration, date: data[i].exerciseDate});
         }
         res.json({_id:idUsername, username: username, count: count, log : log});
         
